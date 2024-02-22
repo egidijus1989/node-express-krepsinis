@@ -11,14 +11,14 @@ router.route("/top-10-best").get(
 router
   .route("/")
   .get(participantsController.getAllParticipants)
-  .post(participantsController.createParticipant);
+  .post(authController.protect, participantsController.createParticipant);
 
 router.route("/:id/card").get(participantsController.getParticipant);
 
 router
   .route("/team/:teamName/members")
-  .get(participantsController.getParticipant);
+  .get(participantsController.getAllParticipantsFromSameTeam);
 
-router.route("/team/youngest:").get(participantsController.getParticipant);
+router.route("/team/youngest:").get(participantsController.getYounges);
 
 module.exports = router;
