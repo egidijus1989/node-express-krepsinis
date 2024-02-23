@@ -1,6 +1,12 @@
-const { param } = require("../routes/participantsRoutes");
 const Participant = require("./../models/paricipantModel");
 const APIFeatures = require("./../utils/APIFeatures");
+
+exports.top10Participants = async (req, res, next) => {
+  req.query.limit = "10";
+  req.query.sort = "-ranking, lastname"
+  req.query.fields ="name, lastname, team, ranking"
+  next()
+}
 
 exports.getAllParticipants = async (req, res) => {
   try {
@@ -56,8 +62,7 @@ exports.getParticipant = async (req, res) => {
 
 exports.getAllParticipantsFromSameTeam = async (req, res) => {
   try {
-    const participants = await Participant.find({ team: req.params.teamName });
-    console.log(req.params.teamName);
+    const participants = await Participant.find({ team: req.params.teamName}).sort({lastname: 1});
     res.status(200).json({
       status: "success",
       results: participants.length,

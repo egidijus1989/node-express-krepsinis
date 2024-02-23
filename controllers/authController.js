@@ -46,7 +46,12 @@ exports.login = async (req, res) => {
     if (!user || !(await user.correctPassword(password, user.password))) {
       throw new Error("Incorrect email or password");
     }
-    const token = signToken(user.id);
+    const token = signToken(user.id)
+    try{
+      await User.updateOne({_id: user._id}, {accessToken: token})
+    }catch(err){
+      console.log(err.message)
+    }
     //3. if everything is ok, send token to client
     res.status(200).json({
       data: {
@@ -63,6 +68,20 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+exports.logout = async (req, res) => {
+  try{
+    await User.findOneAndUpdate({_id: req.user._id}, {accessToken: ""})
+    res.status(200).json({
+      status: "Success",
+    })
+  }catch(err){
+      res.status(400).json({
+      status: "Fail",
+      message: err.message,
+    });
+  }
+}
 
 exports.protect = async (req, res, next) => {
   //1. Getting token
@@ -85,6 +104,9 @@ exports.protect = async (req, res, next) => {
     if (!currentUser) {
       throw new Error("user no exist");
     }
+    if (currentUser.accessToken != token) {
+			throw new Error('user is not logged in')
+		}
     //4. Check user change password after token was issued
     if (currentUser.changedPasswordAfter(decoded.iat)) {
       throw new Error("User changed password");

@@ -39,9 +39,12 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+  accessToken: {
+		type: String,
+	}
 });
 
-userSchema.pre("save", async function (next) {
+userSchema.pre("create", async function (next) {
   if (!this.isModified("password")) return next();
   //Hash password with cost 12
   this.password = await bcryptjs.hash(this.password, 12);

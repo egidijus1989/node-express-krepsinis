@@ -4,8 +4,7 @@ const participantsController = require("../controllers/participantController");
 const authController = require("./../controllers/authController");
 
 router.route("/top-10-best").get(
-  // participantsController.aliasTopParticipant,
-  participantsController.getAllParticipants
+  participantsController.top10Participants, participantsController.getAllParticipants
 );
 
 router
